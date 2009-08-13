@@ -13,8 +13,11 @@ PAM_EXTERN int
 pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **argv)
 {
     char *my_argv[] = { "-T", "-e1", NULL };
+    PerlInterpreter* original_interpreter = PL_curinterp;
 
-    PERL_SYS_INIT(0, NULL);
+    if (original_interpreter == NULL) {
+    	PERL_SYS_INIT(0, NULL);
+    }
 
     PerlInterpreter* my_perl = perl_alloc();
     perl_construct(my_perl);
@@ -26,7 +29,12 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **argv)
     perl_destruct(my_perl);
     perl_free(my_perl);
 
-    PERL_SYS_TERM();
+    if (original_interpreter == NULL) {
+    	PERL_SYS_TERM();
+    }
+    else {
+        PL_curinterp = original_interpreter;
+    }
 
     return PAM_SUCCESS;
 }
