@@ -24,7 +24,20 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **argv)
     perl_parse(my_perl, NULL, 2, my_argv, (char **)NULL);
 
     SV* name = newSVpvn("Hachi::Test", 11);
-    load_module(0, name, NULL);
+
+    load_module(0, newSVsv(name), NULL);
+
+    dSP;
+    ENTER;
+    SAVETMPS;
+    PUSHMARK(SP);
+    XPUSHs(sv_2mortal(name));
+    PUTBACK;
+    call_method("pam_module", G_DISCARD);
+    SPAGAIN;
+    PUTBACK;
+    FREETMPS;
+    LEAVE;
 
     perl_destruct(my_perl);
     perl_free(my_perl);
