@@ -1,0 +1,76 @@
+#include <EXTERN.h>
+#include <perl.h>
+
+#define PAM_SM_AUTH
+#define PAM_SM_ACCOUNT
+#define PAM_SM_SESSION
+#define PAM_SM_PASSWORD
+
+#include <security/pam_modules.h>
+#include <security/_pam_macros.h>
+
+PAM_EXTERN int
+pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **argv)
+{
+    char *my_argv[] = { "-T", "-e1", NULL };
+
+    PERL_SYS_INIT(0, NULL);
+
+    PerlInterpreter* my_perl = perl_alloc();
+    perl_construct(my_perl);
+    perl_parse(my_perl, NULL, 2, my_argv, (char **)NULL);
+
+    SV* name = newSVpvn("Hachi::Test", 11);
+    load_module(0, name, NULL);
+
+    perl_destruct(my_perl);
+    perl_free(my_perl);
+
+    PERL_SYS_TERM();
+
+    return PAM_SUCCESS;
+}
+
+PAM_EXTERN int
+pam_sm_setcred(pam_handle_t *pamh, int flags, int argc, const char **argv)
+{
+     return PAM_SUCCESS;
+}
+
+PAM_EXTERN int
+pam_sm_acct_mgmt(pam_handle_t *pamh, int flags, int argc, const char **argv)
+{
+     return PAM_SUCCESS;
+}
+
+PAM_EXTERN int
+pam_sm_chauthtok(pam_handle_t *pamh, int flags, int argc, const char **argv)
+{
+     return PAM_SUCCESS;
+}
+
+PAM_EXTERN int
+pam_sm_open_session(pam_handle_t *pamh, int flags, int argc, const char **argv)
+{
+    return PAM_SUCCESS;
+}
+
+PAM_EXTERN int
+pam_sm_close_session(pam_handle_t *pamh, int flags, int argc, const char **argv)
+{
+     return PAM_SUCCESS;
+}
+
+#ifdef PAM_STATIC
+
+struct pam_module _pam_perl_modstruct = {
+    "pam_perl",
+    pam_sm_authenticate,
+    pam_sm_setcred,
+    pam_sm_acct_mgmt,
+    pam_sm_open_session,
+    pam_sm_close_session,
+    pam_sm_chauthtok
+};
+
+#endif
