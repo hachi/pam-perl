@@ -16,7 +16,7 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **argv)
     PerlInterpreter* original_interpreter = PL_curinterp;
 
     if (original_interpreter == NULL) {
-    	PERL_SYS_INIT(0, NULL);
+        PERL_SYS_INIT(0, NULL);
     }
 
     PerlInterpreter* my_perl = perl_alloc();
@@ -43,7 +43,7 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **argv)
     perl_free(my_perl);
 
     if (original_interpreter == NULL) {
-    	PERL_SYS_TERM();
+        PERL_SYS_TERM();
     }
     else {
         PL_curinterp = original_interpreter;
