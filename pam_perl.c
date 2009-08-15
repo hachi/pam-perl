@@ -13,7 +13,7 @@ PAM_EXTERN int
 pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **argv)
 {
     int my_argc = 3;
-    char *my_argv[] = { "", "-T", "-e1", NULL };
+    char *my_argv[] = { "", "-T", "-e1", NULL }; // POSIX says it must be NULL terminated, even though we have argc
     PerlInterpreter* original_interpreter = PL_curinterp;
 
     if (original_interpreter == NULL) {
