@@ -12,7 +12,8 @@
 PAM_EXTERN int
 pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **argv)
 {
-    char *my_argv[] = { "-T", "-e1", NULL };
+    int my_argc = 3;
+    char *my_argv[] = { "", "-T", "-e1", NULL };
     PerlInterpreter* original_interpreter = PL_curinterp;
 
     if (original_interpreter == NULL) {
@@ -21,7 +22,7 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **argv)
 
     PerlInterpreter* my_perl = perl_alloc();
     perl_construct(my_perl);
-    perl_parse(my_perl, NULL, 2, my_argv, (char **)NULL);
+    perl_parse(my_perl, NULL, my_argc, my_argv, (char **)NULL);
 
     SV* name = newSVpvn("Hachi::Test", 11);
 
