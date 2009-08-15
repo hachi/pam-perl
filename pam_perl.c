@@ -26,15 +26,20 @@ invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **
     perl_construct(my_perl);
     perl_parse(my_perl, NULL, my_argc, my_argv, (char **)NULL);
 
-    SV* name = newSVpvn("Hachi::Test", 11);
+    if (argc != 1 || argv[0] == NULL) {
+        D(("Wrong number of args passed"));
+        return PAM_MODULE_UNKNOWN;
+    }
 
-    load_module(0, newSVsv(name), NULL, NULL);
+    SV* module_name = newSVpv(argv[0], 0);
+
+    load_module(0, newSVsv(module_name), NULL, NULL);
 
     dSP;
     ENTER;
     SAVETMPS;
     PUSHMARK(SP);
-    XPUSHs(sv_2mortal(name));
+    XPUSHs(sv_2mortal(module_name));
     PUTBACK;
     call_method("pam_module", G_DISCARD);
     SPAGAIN;
