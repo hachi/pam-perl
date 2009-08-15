@@ -41,7 +41,7 @@ invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **
     PUSHMARK(SP);
     XPUSHs(sv_2mortal(module_name));
     PUTBACK;
-    call_method("pam_module", G_DISCARD);
+    call_method(phase, G_DISCARD);
     SPAGAIN;
     PUTBACK;
     FREETMPS;
