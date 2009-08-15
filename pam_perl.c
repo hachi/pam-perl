@@ -16,7 +16,7 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **argv)
     PerlInterpreter* original_interpreter = PL_curinterp;
 
     if (original_interpreter == NULL) {
-        PERL_SYS_INIT(0, NULL);
+        PERL_SYS_INIT(&my_argc, (char***)&my_argv);
     }
 
     PerlInterpreter* my_perl = perl_alloc();
@@ -25,7 +25,7 @@ pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **argv)
 
     SV* name = newSVpvn("Hachi::Test", 11);
 
-    load_module(0, newSVsv(name), NULL);
+    load_module(0, newSVsv(name), NULL, NULL);
 
     dSP;
     ENTER;
