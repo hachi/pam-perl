@@ -14,17 +14,25 @@ int invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const cha
 int
 invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **argv)
 {
+    static PerlInterpreter* my_perl = NULL;
+
     int my_argc = 3;
     char *my_argv[] = { "", "-T", "-e1", NULL }; // POSIX says it must be NULL terminated, even though we have argc
-    PerlInterpreter* original_interpreter = PL_curinterp;
 
-    if (original_interpreter == NULL) {
-        PERL_SYS_INIT(&my_argc, (char***)&my_argv);
+    PerlInterpreter* original_interpreter = PERL_GET_INTERP;
+
+    if (my_perl == NULL) {
+        if (original_interpreter == NULL) {
+            PERL_SYS_INIT(&my_argc, (char***)&my_argv);
+        }
+
+        my_perl = perl_alloc();
+        perl_construct(my_perl);
+        perl_parse(my_perl, NULL, my_argc, my_argv, (char **)NULL);
     }
-
-    PerlInterpreter* my_perl = perl_alloc();
-    perl_construct(my_perl);
-    perl_parse(my_perl, NULL, my_argc, my_argv, (char **)NULL);
+    else {
+        PERL_SET_INTERP(my_perl);
+    }
 
     if (argc != 1 || argv[0] == NULL) {
         D(("Wrong number of args passed"));
@@ -42,21 +50,25 @@ invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **
     XPUSHs(sv_2mortal(module_name));
     PUTBACK;
     call_method(phase, G_DISCARD);
-    SPAGAIN;
-    PUTBACK;
     FREETMPS;
     LEAVE;
 
-    perl_destruct(my_perl);
-    perl_free(my_perl);
+    // TODO get the return value from the subroutine and turn it into a PAM status.
 
-    if (original_interpreter == NULL) {
+    if (0) {
+        perl_destruct(my_perl);
+        perl_free(my_perl);
+        my_perl = NULL;
+    }
+
+    if (original_interpreter != NULL) {
+        PERL_SET_INTERP(original_interpreter);
+    }
+/*  Can't use this cause we might not be the last perl interpreter. Really only perl(1) can call this.
+    else {
         PERL_SYS_TERM();
     }
-    else {
-        PL_curinterp = original_interpreter;
-    }
-
+*/
 }
 
 PAM_EXTERN int
