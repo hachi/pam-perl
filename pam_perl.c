@@ -40,6 +40,40 @@ invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **
     }
 
     SV* module_name = newSVpv(argv[0], 0);
+    HV* stash = gv_stashsv(module_name, GV_ADD);
+
+    newCONSTSUB(stash, "PAM_SUCCESS", newSViv(PAM_SUCCESS));
+    newCONSTSUB(stash, "PAM_OPEN_ERR", newSViv(PAM_OPEN_ERR));
+    newCONSTSUB(stash, "PAM_SYMBOL_ERR", newSViv(PAM_SYMBOL_ERR));
+    newCONSTSUB(stash, "PAM_SERVICE_ERR", newSViv(PAM_SERVICE_ERR));
+    newCONSTSUB(stash, "PAM_SYSTEM_ERR", newSViv(PAM_SYSTEM_ERR));
+    newCONSTSUB(stash, "PAM_BUF_ERR", newSViv(PAM_BUF_ERR));
+    newCONSTSUB(stash, "PAM_PERM_DENIED", newSViv(PAM_PERM_DENIED));
+    newCONSTSUB(stash, "PAM_AUTH_ERR", newSViv(PAM_AUTH_ERR));
+    newCONSTSUB(stash, "PAM_CRED_INSUFFICIENT", newSViv(PAM_CRED_INSUFFICIENT));
+    newCONSTSUB(stash, "PAM_AUTHINFO_UNAVAIL", newSViv(PAM_AUTHINFO_UNAVAIL));
+    newCONSTSUB(stash, "PAM_USER_UNKNOWN", newSViv(PAM_USER_UNKNOWN));
+    newCONSTSUB(stash, "PAM_MAXTRIES", newSViv(PAM_MAXTRIES));
+    newCONSTSUB(stash, "PAM_NEW_AUTHTOK_REQD", newSViv(PAM_NEW_AUTHTOK_REQD));
+    newCONSTSUB(stash, "PAM_ACCT_EXPIRED", newSViv(PAM_ACCT_EXPIRED));
+    newCONSTSUB(stash, "PAM_SESSION_ERR", newSViv(PAM_SESSION_ERR));
+    newCONSTSUB(stash, "PAM_CRED_UNAVAIL", newSViv(PAM_CRED_UNAVAIL));
+    newCONSTSUB(stash, "PAM_CRED_EXPIRED", newSViv(PAM_CRED_EXPIRED));
+    newCONSTSUB(stash, "PAM_CRED_ERR", newSViv(PAM_CRED_ERR));
+    newCONSTSUB(stash, "PAM_NO_MODULE_DATA", newSViv(PAM_NO_MODULE_DATA));
+    newCONSTSUB(stash, "PAM_CONV_ERR", newSViv(PAM_CONV_ERR));
+    newCONSTSUB(stash, "PAM_AUTHTOK_ERR", newSViv(PAM_AUTHTOK_ERR));
+    newCONSTSUB(stash, "PAM_AUTHTOK_RECOVERY_ERR", newSViv(PAM_AUTHTOK_RECOVERY_ERR));
+    newCONSTSUB(stash, "PAM_AUTHTOK_LOCK_BUSY", newSViv(PAM_AUTHTOK_LOCK_BUSY));
+    newCONSTSUB(stash, "PAM_AUTHTOK_DISABLE_AGING", newSViv(PAM_AUTHTOK_DISABLE_AGING));
+    newCONSTSUB(stash, "PAM_TRY_AGAIN", newSViv(PAM_TRY_AGAIN));
+    newCONSTSUB(stash, "PAM_IGNORE", newSViv(PAM_IGNORE));
+    newCONSTSUB(stash, "PAM_ABORT", newSViv(PAM_ABORT));
+    newCONSTSUB(stash, "PAM_AUTHTOK_EXPIRED", newSViv(PAM_AUTHTOK_EXPIRED));
+    newCONSTSUB(stash, "PAM_MODULE_UNKNOWN", newSViv(PAM_MODULE_UNKNOWN));
+    newCONSTSUB(stash, "PAM_BAD_ITEM", newSViv(PAM_BAD_ITEM));
+    newCONSTSUB(stash, "PAM_CONV_AGAIN", newSViv(PAM_CONV_AGAIN));
+    newCONSTSUB(stash, "PAM_INCOMPLETE", newSViv(PAM_INCOMPLETE));
 
     load_module(0, newSVsv(module_name), NULL, NULL);
 
