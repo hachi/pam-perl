@@ -9,7 +9,17 @@
 #include <security/pam_modules.h>
 #include <security/_pam_macros.h>
 
+EXTERN_C void boot_DynaLoader (pTHX_ CV* cv);
+
 int invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **argv);
+static void xs_init (pTHX);
+
+EXTERN_C void
+xs_init(pTHX)
+{
+    char *file = __FILE__;
+    newXS("DynaLoader::boot_DynaLoader", boot_DynaLoader, file);
+}
 
 int
 invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **argv)
@@ -28,7 +38,7 @@ invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **
 
         my_perl = perl_alloc();
         perl_construct(my_perl);
-        perl_parse(my_perl, NULL, my_argc, my_argv, (char **)NULL);
+        perl_parse(my_perl, xs_init, my_argc, my_argv, (char **)NULL);
     }
     else {
         PERL_SET_INTERP(my_perl);
