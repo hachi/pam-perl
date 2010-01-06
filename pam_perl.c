@@ -98,11 +98,14 @@ invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **
     if (original_interpreter != NULL) {
         PERL_SET_INTERP(original_interpreter);
     }
+
 /*  Can't use this cause we might not be the last perl interpreter. Really only perl(1) can call this.
     else {
         PERL_SYS_TERM();
     }
 */
+
+    return 0;
 }
 
 PAM_EXTERN int
