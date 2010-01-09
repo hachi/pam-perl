@@ -95,11 +95,19 @@ invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **
 
     load_module(0, newSVsv(module_name), NULL, NULL);
 
+    const char *user;
+    int pam_err;
+
+    /* identify user */
+    if ((pam_err = pam_get_user(pamh, &user, NULL)) != PAM_SUCCESS)
+        return (pam_err);
+
     dSP;
     ENTER;
     SAVETMPS;
     PUSHMARK(SP);
     XPUSHs(sv_2mortal(module_name));
+    XPUSHs(sv_2mortal(newSVpv(user, 0)));
     PUTBACK;
     call_method(phase, G_SCALAR);
     SPAGAIN;
