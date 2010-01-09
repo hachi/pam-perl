@@ -1,3 +1,5 @@
+#include <dlfcn.h>
+
 #include <EXTERN.h>
 #include <perl.h>
 
@@ -9,10 +11,23 @@
 #include <security/pam_modules.h>
 #include <security/_pam_macros.h>
 
+__attribute__((constructor)) void init();
+
 EXTERN_C void boot_DynaLoader (pTHX_ CV* cv);
 
 int invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **argv);
 static void xs_init (pTHX);
+
+__attribute__((constructor)) void
+init()
+{
+    Dl_info info;
+    int rv = dladdr(&perl_parse, &info);
+    void *handle;
+
+    if (rv)
+        handle = dlopen(info.dli_fname, RTLD_LAZY | RTLD_GLOBAL | RTLD_NODELETE);
+}
 
 EXTERN_C void
 xs_init(pTHX)
