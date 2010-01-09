@@ -13,10 +13,9 @@
 
 __attribute__((constructor)) void init();
 
-EXTERN_C void boot_DynaLoader (pTHX_ CV* cv);
+EXTERN_C void xs_init (pTHX);
 
 int invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **argv);
-static void xs_init (pTHX);
 
 __attribute__((constructor)) void
 init()
@@ -27,14 +26,6 @@ init()
 
     if (rv)
         handle = dlopen(info.dli_fname, RTLD_LAZY | RTLD_GLOBAL | RTLD_NODELETE);
-}
-
-EXTERN_C void
-xs_init(pTHX)
-{
-    char *file = __FILE__;
-    dXSUB_SYS;
-    newXS("DynaLoader::boot_DynaLoader", boot_DynaLoader, file);
 }
 
 int
