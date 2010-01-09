@@ -32,6 +32,7 @@ int
 invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **argv)
 {
     static PerlInterpreter* my_perl = NULL;
+    int rv = PAM_SYSTEM_ERR;
 
     int my_argc = 3;
     char *my_argv[] = { "", "-T", "-e1", NULL }; // POSIX says it must be NULL terminated, even though we have argc
@@ -100,12 +101,15 @@ invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **
     PUSHMARK(SP);
     XPUSHs(sv_2mortal(module_name));
     PUTBACK;
-    call_method(phase, G_DISCARD);
+    call_method(phase, G_SCALAR);
+    SPAGAIN;
+    rv = POPi;
+    PUTBACK;
     FREETMPS;
     LEAVE;
 
-    // TODO get the return value from the subroutine and turn it into a PAM status.
-
+    // TODO, should I destroy and shutdown the interpreter to save memory, or keep it up so that module writers can have persistency.
+    // Suppose could also add a way to pass data between invocations.
     if (0) {
         perl_destruct(my_perl);
         perl_free(my_perl);
@@ -122,49 +126,43 @@ invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **
     }
 */
 
-    return 0;
+    return rv;
 }
 
 PAM_EXTERN int
 pam_sm_authenticate(pam_handle_t *pamh, int flags, int argc, const char **argv)
 {
-    invoke("authenticate", pamh, flags, argc, argv);
-    return PAM_SUCCESS;
+    return invoke("authenticate", pamh, flags, argc, argv);
 }
 
 PAM_EXTERN int
 pam_sm_setcred(pam_handle_t *pamh, int flags, int argc, const char **argv)
 {
-    invoke("setcred", pamh, flags, argc, argv);
-    return PAM_SUCCESS;
+    return invoke("setcred", pamh, flags, argc, argv);
 }
 
 PAM_EXTERN int
 pam_sm_acct_mgmt(pam_handle_t *pamh, int flags, int argc, const char **argv)
 {
-    invoke("acct_mgmt", pamh, flags, argc, argv);
-    return PAM_SUCCESS;
+    return invoke("acct_mgmt", pamh, flags, argc, argv);
 }
 
 PAM_EXTERN int
 pam_sm_chauthtok(pam_handle_t *pamh, int flags, int argc, const char **argv)
 {
-    invoke("chauthtok", pamh, flags, argc, argv);
-    return PAM_SUCCESS;
+    return invoke("chauthtok", pamh, flags, argc, argv);
 }
 
 PAM_EXTERN int
 pam_sm_open_session(pam_handle_t *pamh, int flags, int argc, const char **argv)
 {
-    invoke("open_session", pamh, flags, argc, argv);
-    return PAM_SUCCESS;
+    return invoke("open_session", pamh, flags, argc, argv);
 }
 
 PAM_EXTERN int
 pam_sm_close_session(pam_handle_t *pamh, int flags, int argc, const char **argv)
 {
-    invoke("close_session", pamh, flags, argc, argv);
-    return PAM_SUCCESS;
+    return invoke("close_session", pamh, flags, argc, argv);
 }
 
 #ifdef PAM_STATIC
