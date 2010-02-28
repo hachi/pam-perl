@@ -9,7 +9,7 @@
 #define PAM_SM_PASSWORD
 
 #include <security/pam_modules.h>
-#include <security/_pam_macros.h>
+#include <security/pam_misc.h>
 
 __attribute__((constructor)) void init();
 
