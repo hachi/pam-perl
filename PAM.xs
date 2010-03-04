@@ -9,7 +9,6 @@
 
 #include "xs_object_magic.h"
 
-//pam_set_item
 //pam_strerror
 //pam_set_data
 //pam_get_data
@@ -76,3 +75,34 @@ get_item(pam_handle, item_type)
         }
     OUTPUT:
         RETVAL
+
+void
+set_item(pam_handle, item_type, item_sv)
+    pam_handle_t* pam_handle
+    int item_type
+    SV* item_sv
+    const void* item = NO_INIT
+    int rv            = NO_INIT
+    CODE:
+        switch (item_type)
+        {
+            case PAM_SERVICE :
+            case PAM_USER :
+            case PAM_USER_PROMPT :
+            case PAM_TTY :
+            case PAM_RUSER :
+            case PAM_RHOST :
+            case PAM_AUTHTOK :
+            case PAM_OLDAUTHTOK :
+            case PAM_XDISPLAY : // Linux specific
+                item = SvPV_nolen(item_sv);
+                rv = pam_set_item(pam_handle, item_type, item);
+            break;
+
+            case PAM_CONV :
+            case PAM_FAIL_DELAY :   // Linux specific
+            case PAM_XAUTHDATA :    // Linux specific
+            case PAM_AUTHTOK_TYPE : // Linux specific
+            default :
+            break;
+        }
