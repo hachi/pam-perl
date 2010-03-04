@@ -62,7 +62,10 @@ get_item(pam_handle, item_type)
             case PAM_OLDAUTHTOK :
             case PAM_XDISPLAY : // Linux specific
                 rv = pam_get_item(pam_handle, item_type, &item);
-                RETVAL = (char*)item;
+                if (rv == PAM_SUCCESS)
+                    RETVAL = (char*)item;
+                else
+                    RETVAL = NULL;
             break;
 
             case PAM_CONV :
