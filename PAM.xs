@@ -10,8 +10,6 @@
 #include "xs_object_magic.h"
 
 //pam_strerror
-//pam_set_data
-//pam_get_data
 //pam_putenv
 //pam_getenv
 //pam_getenvlist
@@ -109,3 +107,30 @@ set_item(pam_handle, item_type, item_sv)
             default :
             break;
         }
+
+const char*
+get_data(pam_handle, name)
+    pam_handle_t* pam_handle
+    const char* name
+    void* data       = NO_INIT
+    int rv           = NO_INIT
+    CODE:
+        rv = pam_get_data(pam_handle, name, &data);
+        if (rv == PAM_SUCCESS)
+            RETVAL = (char*)data;
+        else
+            RETVAL = NULL;
+    OUTPUT:
+        RETVAL
+
+void
+set_data(pam_handle, name, data_sv)
+    pam_handle_t* pam_handle
+    const char* name
+    SV* data_sv
+    const void* data = NO_INIT
+    int rv           = NO_INIT
+    CODE:
+        data = SvPV_nolen(data_sv);
+        rv = pam_set_data(pam_handle, name, data);
+
