@@ -11,6 +11,8 @@
 #include <security/pam_modules.h>
 #include <security/pam_misc.h>
 
+#include <xs_object_magic.h>
+
 __attribute__((constructor)) void init();
 
 EXTERN_C void xs_init (pTHX);
@@ -21,10 +23,15 @@ __attribute__((constructor)) void
 init()
 {
     Dl_info info;
-    int rv = dladdr(&perl_parse, &info);
+    int addr;
     void *handle;
 
-    if (rv)
+    addr = dladdr(&perl_parse, &info);
+    if (addr)
+        handle = dlopen(info.dli_fname, RTLD_LAZY | RTLD_GLOBAL | RTLD_NODELETE);
+
+    addr = dladdr(&xs_object_magic_get_struct_rv_pretty, &info);
+    if (addr)
         handle = dlopen(info.dli_fname, RTLD_LAZY | RTLD_GLOBAL | RTLD_NODELETE);
 }
 
@@ -36,6 +43,8 @@ invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **
 
     int my_argc = 3;
     char *my_argv[] = { "", "-T", "-e1", NULL }; // POSIX says it must be NULL terminated, even though we have argc
+
+    int i;
 
     PerlInterpreter* original_interpreter = PERL_GET_INTERP;
 
@@ -52,8 +61,8 @@ invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **
         PERL_SET_INTERP(my_perl);
     }
 
-    if (argc != 1 || argv[0] == NULL) {
-        D(("Wrong number of args passed"));
+    if (argc < 1 || argv[0] == NULL) {
+        D(("Not enough args passed"));
         return PAM_MODULE_UNKNOWN;
     }
 
@@ -102,12 +111,18 @@ invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **
     if ((pam_err = pam_get_user(pamh, &user, NULL)) != PAM_SUCCESS)
         return (pam_err);
 
+    SV *pamh_sv = xs_object_magic_create(aTHX_ pamh, gv_stashpv("PAM::Handle", GV_ADD));
+
     dSP;
     ENTER;
     SAVETMPS;
     PUSHMARK(SP);
+    EXTEND(SP, 3 + argc);
     XPUSHs(sv_2mortal(module_name));
-    XPUSHs(sv_2mortal(newSVpv(user, 0)));
+    XPUSHs(sv_2mortal(pamh_sv));
+    XPUSHs(sv_2mortal(newSViv(flags)));
+    for (i = 0; i < argc; i++)
+        XPUSHs(sv_2mortal(newSVpv(argv[i], 0)));
     PUTBACK;
     call_method(phase, G_SCALAR);
     SPAGAIN;
