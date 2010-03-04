@@ -8,7 +8,9 @@ use Exporter;
 
 use base 'Exporter';
 
-our %EXPORT_TAGS = ( 'all' => [ qw(
+our %EXPORT_TAGS;
+
+$EXPORT_TAGS{'return'} = [ qw(
 PAM_SUCCESS
 PAM_OPEN_ERR
 PAM_SYMBOL_ERR
@@ -41,9 +43,32 @@ PAM_MODULE_UNKNOWN
 PAM_BAD_ITEM
 PAM_CONV_AGAIN
 PAM_INCOMPLETE
+) ];
 
+$EXPORT_TAGS{'item'} = [ qw(
 PAM_SERVICE
-) ] );
+PAM_USER
+PAM_USER_PROMPT
+PAM_TTY
+PAM_RUSER
+PAM_RHOST
+PAM_AUTHTOK
+PAM_OLDAUTHTOK
+PAM_CONF
+) ];
+
+$EXPORT_TAGS{'item_linux'} = [ qw(
+PAM_FAIL_DELAY
+PAM_XDISPLAY
+PAM_XAUTHDATA
+PAM_AUTHTOK_TYPE
+) ];
+
+$EXPORT_TAGS{'all'} = [
+    @{$EXPORT_TAGS{'return'}},
+    @{$EXPORT_TAGS{'item'}},
+    @{$EXPORT_TAGS{'item_linux'}},
+];
 
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
 
