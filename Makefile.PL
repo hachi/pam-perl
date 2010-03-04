@@ -7,12 +7,11 @@ all_from       'lib/PAM.pm';
 
 my $pkg = ExtUtils::Depends->new('PAM', 'XS::Object::Magic');
 
-use Data::Dumper;
-print Dumper($pkg->get_makefile_vars);
-
 makemaker_args(
     $pkg->get_makefile_vars,
 );
+
+PAMPerl;
 
 WriteAll;
 
