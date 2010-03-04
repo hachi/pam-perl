@@ -17,31 +17,30 @@ MODULE = PAM    PACKAGE = PAM::Handle    PREFIX = pam_
 
 PROTOTYPES: DISABLE
 
-const char*
+SV*
 get_user(pam_handle, ...)
     pam_handle_t* pam_handle
-    const char* user   = NO_INIT
-    const char* prompt = NO_INIT
-    int rv             = NO_INIT
     PREINIT:
-        prompt = NULL;
-        user = "";
+        const char* user;
+        const char* prompt = NULL;
+        int rv;
     CODE:
         if (items > 1)
             prompt = (char *)SvPV_nolen(ST(1));
         if (pam_handle == NULL)
             croak("pam_handle not defined\n");
         rv = pam_get_user(pam_handle, &user, prompt);
-        RETVAL = user;
+        RETVAL = newSVpv(user, 0);
     OUTPUT:
         RETVAL
 
-const char*
+SV*
 get_item(pam_handle, item_type)
     pam_handle_t* pam_handle
     int item_type
-    const void* item = NO_INIT
-    int rv            = NO_INIT
+    PREINIT:
+        const void* item;
+        int rv;
     CODE:
         switch (item_type)
         {
@@ -56,9 +55,9 @@ get_item(pam_handle, item_type)
             case PAM_XDISPLAY : // Linux specific
                 rv = pam_get_item(pam_handle, item_type, &item);
                 if (rv == PAM_SUCCESS)
-                    RETVAL = (char*)item;
+                    RETVAL = newSVpv((char*)item, 0);
                 else
-                    RETVAL = NULL;
+                    RETVAL = &PL_sv_undef;
             break;
 
             case PAM_CONV :
@@ -66,7 +65,7 @@ get_item(pam_handle, item_type)
             case PAM_XAUTHDATA :    // Linux specific
             case PAM_AUTHTOK_TYPE : // Linux specific
             default :
-                RETVAL = NULL;
+                RETVAL = &PL_sv_undef;
             break;
         }
     OUTPUT:
@@ -77,8 +76,9 @@ set_item(pam_handle, item_type, item_sv)
     pam_handle_t* pam_handle
     int item_type
     SV* item_sv
-    const void* item = NO_INIT
-    int rv            = NO_INIT
+    PREINIT:
+        const void* item;
+        int rv;
     CODE:
         switch (item_type)
         {
@@ -103,18 +103,19 @@ set_item(pam_handle, item_type, item_sv)
             break;
         }
 
-const char*
+SV*
 get_data(pam_handle, name)
     pam_handle_t* pam_handle
     const char* name
-    void* data       = NO_INIT
-    int rv           = NO_INIT
+    PREINIT:
+        void* data;
+        int rv;
     CODE:
         rv = pam_get_data(pam_handle, name, &data);
         if (rv == PAM_SUCCESS)
-            RETVAL = (char*)data;
+            RETVAL = newSVpv((char*)data, 0);
         else
-            RETVAL = NULL;
+            RETVAL = &PL_sv_undef;
     OUTPUT:
         RETVAL
 
@@ -123,8 +124,9 @@ set_data(pam_handle, name, data_sv)
     pam_handle_t* pam_handle
     const char* name
     SV* data_sv
-    const void* data = NO_INIT
-    int rv           = NO_INIT
+    PREINIT:
+        const void* data;
+        int rv;
     CODE:
         data = SvPV_nolen(data_sv);
         rv = pam_set_data(pam_handle, name, data);
