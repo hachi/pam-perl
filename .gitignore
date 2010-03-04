@@ -2,6 +2,7 @@ blib/
 const-c.inc
 const-xs.inc
 inc/
+MANIFEST.bak
 Makefile
 Makefile.old
 META.yml
