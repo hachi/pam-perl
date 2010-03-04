@@ -10,6 +10,8 @@ PAM.c
 PAM.o
 pam_perl.o
 pam_perl.so*
+perl_helper.o
+perl_helper.so*
 perlxsi.c
 perlxsi.o
 pm_to_blib
