@@ -9,6 +9,15 @@
 
 #include "xs_object_magic.h"
 
+//pam_get_item
+//pam_set_item
+//pam_strerror
+//pam_set_data
+//pam_get_data
+//pam_putenv
+//pam_getenv
+//pam_getenvlist
+
 MODULE = PAM    PACKAGE = PAM::Constants
 
 INCLUDE: const-xs.inc
@@ -35,12 +44,3 @@ get_user(pam_handle, ...)
         RETVAL = user;
     OUTPUT:
         RETVAL
-
-//pam_get_item
-//pam_set_item
-//pam_strerror
-//pam_set_data
-//pam_get_data
-//pam_putenv
-//pam_getenv
-//pam_getenvlist
