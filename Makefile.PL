@@ -32,6 +32,12 @@ pam_perl.so: pam_perl.o
 
 pam: pam_perl.so perl_helper.so
 
+const-xs.inc const-c.inc ::
+	$(PERLRUN) -MExtUtils::Constant=WriteConstants -Ilib -MPAM::Constants \
+                   -e 'WriteConstants(NAME => "PAM", NAMES => \@PAM::Constants::EXPORT_OK)'
+
+config :: const-xs.inc const-c.inc
+
 all :: pam
 
 
@@ -40,16 +46,3 @@ EOT
 clean_files(qw(perlxsi.c perlxsi.o perl_helper.o perl_helper.so pam_perl.o pam_perl.so const-c.inc const-xs.inc));
 
 WriteAll;
-
-use ExtUtils::Constant qw (WriteConstants);
-
-open my $const_fh, '<', 'constants.txt'
-    or die "Couldn't open constants list file: $!\n";
-
-my @constants = <$const_fh>;
-chomp @constants;
-
-WriteConstants(
-    NAME => 'PAM',
-    NAMES => [@constants],
-);
