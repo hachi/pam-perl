@@ -1,0 +1,15 @@
+blib/
+const-c.inc
+const-xs.inc
+inc/
+Makefile
+Makefile.old
+META.yml
+PAM.bs
+PAM.c
+PAM.o
+pam_perl.o
+pam_perl.so*
+perlxsi.c
+perlxsi.o
+pm_to_blib
