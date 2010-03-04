@@ -27,7 +27,7 @@ PROTOTYPES: DISABLE
 
 const char*
 get_user(pam_handle, ...)
-    const pam_handle_t* pam_handle
+    pam_handle_t* pam_handle
     const char* user   = NO_INIT
     const char* prompt = NO_INIT
     int rv             = NO_INIT
@@ -46,7 +46,7 @@ get_user(pam_handle, ...)
 
 const char*
 get_item(pam_handle, item_type)
-    const pam_handle_t* pam_handle
+    pam_handle_t* pam_handle
     int item_type
     const void* item = NO_INIT
     int rv            = NO_INIT

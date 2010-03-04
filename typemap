@@ -1,2 +1,2 @@
 TYPEMAP
-const pam_handle_t *	T_PTROBJ_MG
+pam_handle_t *	T_PTROBJ_MG
