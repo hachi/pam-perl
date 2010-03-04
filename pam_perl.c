@@ -1,4 +1,5 @@
 #include <dlfcn.h>
+#include <assert.h>
 
 #define PAM_SM_AUTH
 #define PAM_SM_ACCOUNT
