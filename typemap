@@ -1,0 +1,2 @@
+TYPEMAP
+const pam_handle_t *	T_PTROBJ_MG
