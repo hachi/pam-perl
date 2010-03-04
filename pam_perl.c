@@ -70,13 +70,6 @@ invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **
 
     load_module(0, newSVsv(module_name), NULL, NULL);
 
-    const char *user;
-    int pam_err;
-
-    /* identify user */
-    if ((pam_err = pam_get_user(pamh, &user, NULL)) != PAM_SUCCESS)
-        return (pam_err);
-
     SV *pamh_sv = xs_object_magic_create(aTHX_ pamh, gv_stashpv("PAM::Handle", GV_ADD));
 
     dSP;
