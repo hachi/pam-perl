@@ -1,0 +1,5 @@
+This PAM module is available under the same terms as perl itself.
+
+I would however point out that you shouldn't use it as-is right now, many return codes and inputs are not checked for validity and safety.
+
+It compiles, it works... but I don't trust it yet.
