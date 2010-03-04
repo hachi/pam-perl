@@ -9,11 +9,6 @@
 
 #include "xs_object_magic.h"
 
-//pam_strerror
-//pam_putenv
-//pam_getenv
-//pam_getenvlist
-
 MODULE = PAM    PACKAGE = PAM::Constants
 
 INCLUDE: const-xs.inc
@@ -134,3 +129,51 @@ set_data(pam_handle, name, data_sv)
         data = SvPV_nolen(data_sv);
         rv = pam_set_data(pam_handle, name, data);
 
+void
+getenvlist(pam_handle)
+    pam_handle_t* pam_handle
+    PREINIT:
+        char** env;
+        char** env_orig;
+    PPCODE:
+        env = pam_getenvlist(pam_handle);
+        env_orig = env;
+        while (env != NULL) {
+            XPUSHs(sv_2mortal(newSVpv(*env, 0)));
+            env++;
+        }
+        free(env_orig);
+
+SV*
+getenv(pam_handle, name)
+    pam_handle_t* pam_handle
+    const char* name
+    PREINIT:
+        const char* value;
+    CODE:
+        value = pam_getenv(pam_handle, name);
+        RETVAL = newSVpv(value, 0);
+    OUTPUT:
+        RETVAL
+
+void
+putenv(pam_handle, name_value_sv)
+    pam_handle_t* pam_handle
+    SV* name_value_sv
+    const void* name_value = NO_INIT
+    int rv           = NO_INIT
+    CODE:
+        name_value = SvPV_nolen(name_value_sv);
+        rv = pam_putenv(pam_handle, name_value);
+
+SV*
+strerror(pam_handle, errnum)
+    pam_handle_t* pam_handle
+    int           errnum
+    PREINIT:
+        const char* errstr;
+    CODE:
+        errstr = pam_strerror(pam_handle, errnum);
+        RETVAL = newSVpv(errstr, 0);
+    OUTPUT:
+        RETVAL
