@@ -1,5 +1,4 @@
 #include <dlfcn.h>
-#include <assert.h>
 
 #define PAM_SM_AUTH
 #define PAM_SM_ACCOUNT
@@ -18,9 +17,13 @@ invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **
     void *handle = NULL;
 
     handle = dlopen("/lib/security/perl_helper.so", RTLD_LAZY | RTLD_GLOBAL | RTLD_NODELETE);
-    assert(handle);
+    if (handle == NULL)
+        return PAM_MODULE_UNKNOWN;
+
     perl_invoke = dlsym(handle, "invoke");
-    assert(perl_invoke);
+    if (perl_invoke == NULL)
+        return PAM_MODULE_UNKNOWN;
+
     return (*perl_invoke)(phase, pamh, flags, argc, argv);
 }
 
