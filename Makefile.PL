@@ -36,8 +36,8 @@ pam: pam_perl.so perl_helper.so
 pam-install: pam_perl.so perl_helper.so
 	install --owner=root --group=root pam_perl.so perl_helper.so /lib/security/
 
-const-xs.inc const-c.inc ::
-	$(PERLRUN) -MExtUtils::Constant=WriteConstants -Ilib -MPAM::Constants \
+const-xs.inc const-c.inc :: pm_to_blib
+	$(PERLRUN) -MExtUtils::Constant=WriteConstants -Mblib -MPAM::Constants \
                    -e 'WriteConstants(NAME => "PAM", NAMES => \@PAM::Constants::EXPORT_OK)'
 
 all :: pam
