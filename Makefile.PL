@@ -10,6 +10,7 @@ my $pkg = ExtUtils::Depends->new('PAM', 'XS::Object::Magic');
 makemaker_args(
     $pkg->get_makefile_vars,
     depend => { 'PAM.c' => 'const-xs.inc', '$(OBJECT)' => 'const-c.inc' },
+    LIBS => [ '-lpam' ],
 );
 
 postamble(<<'EOT');
