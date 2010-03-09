@@ -9,6 +9,7 @@ my $pkg = ExtUtils::Depends->new('PAM', 'XS::Object::Magic');
 
 makemaker_args(
     $pkg->get_makefile_vars,
+    depend => { 'PAM.c' => 'const-xs.inc', '$(OBJECT)' => 'const-c.inc' },
 );
 
 postamble(<<'EOT');
@@ -38,8 +39,6 @@ pam-install: pam_perl.so perl_helper.so
 const-xs.inc const-c.inc ::
 	$(PERLRUN) -MExtUtils::Constant=WriteConstants -Ilib -MPAM::Constants \
                    -e 'WriteConstants(NAME => "PAM", NAMES => \@PAM::Constants::EXPORT_OK)'
-
-config :: const-xs.inc const-c.inc
 
 all :: pam
 
