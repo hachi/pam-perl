@@ -38,7 +38,6 @@ invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **
     }
 
     if (argc < 1 || argv[0] == NULL) {
-        D(("Not enough args passed"));
         return PAM_MODULE_UNKNOWN;
     }
 
