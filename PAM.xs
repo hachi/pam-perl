@@ -4,7 +4,7 @@
 
 #include "ppport.h"
 
-#include <security/pam_misc.h>
+#include <security/pam_modules.h>
 #include "const-c.inc"
 
 #include "xs_object_magic.h"
@@ -52,7 +52,9 @@ get_item(pam_handle, item_type)
             case PAM_RHOST :
             case PAM_AUTHTOK :
             case PAM_OLDAUTHTOK :
+#ifdef __LINUX_PAM__
             case PAM_XDISPLAY : // Linux specific
+#endif
                 rv = pam_get_item(pam_handle, item_type, &item);
                 if (rv == PAM_SUCCESS)
                     RETVAL = newSVpv((char*)item, 0);
@@ -61,9 +63,11 @@ get_item(pam_handle, item_type)
             break;
 
             case PAM_CONV :
+#ifdef __LINUX_PAM__
             case PAM_FAIL_DELAY :   // Linux specific
             case PAM_XAUTHDATA :    // Linux specific
             case PAM_AUTHTOK_TYPE : // Linux specific
+#endif
             default :
                 RETVAL = &PL_sv_undef;
             break;
@@ -90,15 +94,19 @@ set_item(pam_handle, item_type, item_sv)
             case PAM_RHOST :
             case PAM_AUTHTOK :
             case PAM_OLDAUTHTOK :
+#ifdef __LINUX_PAM__
             case PAM_XDISPLAY : // Linux specific
+#endif
                 item = SvPV_nolen(item_sv);
                 rv = pam_set_item(pam_handle, item_type, item);
             break;
 
             case PAM_CONV :
+#ifdef __LINUX_PAM__
             case PAM_FAIL_DELAY :   // Linux specific
             case PAM_XAUTHDATA :    // Linux specific
             case PAM_AUTHTOK_TYPE : // Linux specific
+#endif
             default :
             break;
         }

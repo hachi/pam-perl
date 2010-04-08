@@ -2,7 +2,6 @@
 #include <perl.h>
 
 #include <security/pam_modules.h>
-#include <security/pam_misc.h>
 
 #include <xs_object_magic.h>
 

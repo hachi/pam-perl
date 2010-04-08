@@ -6,7 +6,6 @@
 #define PAM_SM_PASSWORD
 
 #include <security/pam_modules.h>
-#include <security/pam_misc.h>
 
 int invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **argv);
 
