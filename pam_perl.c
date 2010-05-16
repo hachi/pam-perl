@@ -1,5 +1,7 @@
 #include <dlfcn.h>
 
+#include <stdlib.h>
+
 #define PAM_SM_AUTH
 #define PAM_SM_ACCOUNT
 #define PAM_SM_SESSION
