@@ -4,10 +4,19 @@
 
 #include "ppport.h"
 
+#include <stdlib.h>
+#include <string.h>
+
 #include <security/pam_modules.h>
 #include "const-c.inc"
 
 #include "xs_object_magic.h"
+
+static void cleanup_data(pam_handle_t*, void*, int);
+
+static void cleanup_data(pam_handle_t *pamh, void *data, int error_status) {
+    free(data);
+}
 
 MODULE = PAM    PACKAGE = PAM::Constants
 
@@ -116,7 +125,7 @@ get_data(pam_handle, name)
     pam_handle_t* pam_handle
     const char* name
     PREINIT:
-        void* data;
+        const void* data;
         int rv;
     CODE:
         rv = pam_get_data(pam_handle, name, &data);
@@ -133,11 +142,21 @@ set_data(pam_handle, name, data_sv)
     const char* name
     SV* data_sv
     PREINIT:
-        const void* data;
-        int rv;
+        const void *data;
+        void *datacpy;
+        int rv, len;
     CODE:
-        data = SvPV_nolen(data_sv);
-        rv = pam_set_data(pam_handle, name, data);
+        if (SvOK(data_sv)) {
+            data = SvPV(data_sv, len);
+            datacpy = malloc(len);
+            if (datacpy == NULL)
+                croak("Unable to allocate memory\n");
+            memcpy(datacpy, data, len);
+            rv = pam_set_data(pam_handle, name, datacpy, &cleanup_data);
+        } else {
+            // undef should set null
+            rv = pam_set_data(pam_handle, name, NULL, NULL);
+        }
 
 void
 getenvlist(pam_handle)
