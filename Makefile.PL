@@ -40,7 +40,7 @@ perl_helper.o: perl_helper.c
 	$(CC) $(CCOPTS) $(CCCDLFLAGS) $(OPTIMIZE) "-I$(PERL_INC)" $(INC) -Wall -c perl_helper.c
 
 perl_helper.so: perl_helper.o perlxsi.o
-	$(LD) $(LDOPTS) $(LDDLFLAGS) $(EXTRALIBS) -o perl_helper.so perl_helper.o perlxsi.o
+	$(LD) $(LDOPTS) $(LDDLFLAGS) $(EXTRALIBS) -o perl_helper.so perl_helper.o perlxsi.o /usr/lib/perl/5.8/auto/DynaLoader/DynaLoader.a
 
 pam_perl.o: pam_perl.c
 	$(CC) $(CCOPTS) $(CCCDLFLAGS) $(OPTIMIZE) $(INC) -D'PAM_LIB_DIR="$(PAM_LIB_DIR)"' -Wall -c pam_perl.c
