@@ -30,11 +30,12 @@ invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **
         }
 
         my_perl = perl_alloc();
+        PERL_SET_CONTEXT(my_perl);
         perl_construct(my_perl);
         perl_parse(my_perl, xs_init, my_argc, my_argv, (char **)NULL);
     }
     else {
-        PERL_SET_INTERP(my_perl);
+        PERL_SET_CONTEXT(my_perl);
     }
 
     if (argc < 1 || argv[0] == NULL) {
@@ -76,7 +77,7 @@ invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **
     }
 
     if (original_interpreter != NULL) {
-        PERL_SET_INTERP(original_interpreter);
+        PERL_SET_CONTEXT(original_interpreter);
     }
 
 /*  Can't use this cause we might not be the last perl interpreter. Really only perl(1) can call this.
