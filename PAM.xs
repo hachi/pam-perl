@@ -44,12 +44,14 @@ get_user(pam_handle, ...)
         RETVAL
 
 SV*
-get_item(pam_handle, item_type)
-    pam_handle_t* pam_handle
+get_item(SV *self, item_type)
     int item_type
     PREINIT:
+        pam_handle_t* pam_handle;
         const void* item;
         int rv;
+    INIT:
+        pam_handle = xs_object_magic_get_struct_rv(aTHX_ self);
     CODE:
         switch (item_type)
         {
@@ -72,6 +74,19 @@ get_item(pam_handle, item_type)
             break;
 
             case PAM_CONV :
+                rv = pam_get_item(pam_handle, item_type, &item);
+                if (rv == PAM_SUCCESS) {
+                    SV* pamc = xs_object_magic_create(aTHX_ (void*)item, gv_stashpv("PAM::Conversation", GV_ADD));
+
+                    SV* pamh_ref = newRV_inc(SvRV(self));
+                    if (hv_stores((HV*)SvRV(pamc), "handle", pamh_ref) == NULL)
+                        SvREFCNT_dec(pamh_ref);
+
+                    RETVAL = pamc;
+                } else {
+                    RETVAL = &PL_sv_undef;
+                }
+            break;
 #ifdef __LINUX_PAM__
             case PAM_FAIL_DELAY :   // Linux specific
             case PAM_XAUTHDATA :    // Linux specific
