@@ -88,3 +88,24 @@ invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **
 
     return rv;
 }
+
+void
+start_perl_callback(pam_handle_t *pamh)
+{
+    PerlInterpreter* original_interpreter;
+    if (pam_get_data(pamh, ORIGINAL_INTERPRETER_KEY, (void*)&original_interpreter) != PAM_SUCCESS)
+        original_interpreter = NULL;
+    if (original_interpreter != NULL) {
+        PERL_SET_CONTEXT(original_interpreter);
+    }
+}
+
+void
+end_perl_callback(pam_handle_t *pamh)
+{
+    PerlInterpreter* my_perl;
+    if (pam_get_data(pamh, MY_INTERPRETER_KEY, (void*)&my_perl) != PAM_SUCCESS)
+        my_perl = NULL;
+    assert(my_perl);
+    PERL_SET_CONTEXT(my_perl);
+}
