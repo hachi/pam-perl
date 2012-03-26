@@ -167,7 +167,8 @@ set_data(pam_handle, name, data_sv)
     PREINIT:
         const void *data;
         void *datacpy;
-        int rv, len;
+        int rv;
+        STRLEN len = 0;
     CODE:
         if (SvOK(data_sv)) {
             data = SvPV(data_sv, len);
