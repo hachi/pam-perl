@@ -18,7 +18,7 @@ makemaker_args(
     LIBS => [ '-lpam' ],
 );
 
-my $pam_lib_dir = "/lib/security/";
+my $pam_lib_dir = "/lib/x86_64-linux-gnu/security/";
 
 $pam_lib_dir = "/usr/lib/pam" if $^O eq 'darwin';
 
