@@ -1,3 +1,4 @@
+0.30
  -- Make it actually compile and work on OSX
  -- Make constants problems show up at compile time
  -- Turn on debugging all the time
