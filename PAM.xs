@@ -229,6 +229,41 @@ strerror(pam_handle, errnum)
     OUTPUT:
         RETVAL
 
+SV*
+prompt(pam_handle, style, fmt, ...)
+    pam_handle_t* pam_handle
+    int           style
+    const char*   fmt
+    PREINIT:
+        char *response = NULL;
+    CODE:
+        pam_prompt(pam_handle, style, &response, fmt, ...);
+        if (response == NULL)
+            RETVAL = &Pl_sv_undef;
+        else
+            RETVAL = newSVpv(response, 0);
+    OUTPUT:
+        RETVAL
+
+SV*
+get_authtok(pam_handle, item, ...)
+    pam_handle_t* pam_handle
+    int           item
+    PREINIT:
+        char *authtok = NULL;
+        char *prompt  = NULL;
+        int rv;
+    CODE:
+        if (items > 2)
+            prompt = (char *)SvPV_nolen(ST(2));
+        rv = pam_get_authtok(pam_handle, item, &authtok, prompt);
+        if (rv == PAM_SUCCESS)
+            RETVAL = newSVpv(authtok, 0);
+        else
+            RETVAL = &Pl_sv_undef;
+    OUTPUT:
+        RETVAL
+
 MODULE = PAM    PACKAGE = PAM::Conversation
 
 int
