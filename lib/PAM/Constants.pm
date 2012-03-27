@@ -64,10 +64,18 @@ PAM_XAUTHDATA
 PAM_AUTHTOK_TYPE
 ) ];
 
+$EXPORT_TAGS{'conv'} = [ qw(
+PAM_PROMPT_ECHO_OFF
+PAM_PROMPT_ECHO_ON
+PAM_ERROR_MSG
+PAM_TEXT_INFO
+) ];
+
 $EXPORT_TAGS{'all'} = [
     @{$EXPORT_TAGS{'return'}},
     @{$EXPORT_TAGS{'item'}},
     @{$EXPORT_TAGS{'item_linux'}},
+    @{$EXPORT_TAGS{'conv'}},
 ];
 
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
