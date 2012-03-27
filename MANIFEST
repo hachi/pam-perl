@@ -15,6 +15,7 @@ MANIFEST			This list of files
 META.yml
 PAM.xs
 pam_perl.c
+perl_helper.h
 perl_helper.c
 ppport.h
 README
