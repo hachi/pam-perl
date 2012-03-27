@@ -1,3 +1,4 @@
+0.02
  -- Add conversation support
  -- Fix a lot of segfaults and memory issues
  -- Clean up perl interpreter when pam handle is cleaned up
