@@ -42,7 +42,7 @@ $VERSION = eval $VERSION;
 
 =head1 COPYRIGHT
 
-Copyright 2010 - Jonathan Steinert
+Copyright 2012 - Jonathan Steinert
 
 =head1 AUTHOR
 
