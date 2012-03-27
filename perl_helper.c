@@ -118,7 +118,7 @@ void
 cleanup_my_perl(pam_handle_t *pamh, void *data, int error_status)
 {
     pam_syslog(pamh, LOG_DEBUG, "Cleaning up perl interpreter");
-    PerlInterpreter* my_perl = (PerlInterpreter*)data;
+    PerlInterpreter *my_perl = (PerlInterpreter*)data;
     perl_destruct(my_perl);
     perl_free(my_perl);
     my_perl = NULL;
@@ -127,7 +127,7 @@ cleanup_my_perl(pam_handle_t *pamh, void *data, int error_status)
 void
 start_perl_callback(pam_handle_t *pamh)
 {
-    PerlInterpreter* original_interpreter;
+    PerlInterpreter *original_interpreter;
     if (pam_get_data(pamh, ORIGINAL_INTERPRETER_KEY, (void*)&original_interpreter) != PAM_SUCCESS)
         original_interpreter = NULL;
     if (original_interpreter != NULL) {
@@ -138,7 +138,7 @@ start_perl_callback(pam_handle_t *pamh)
 void
 end_perl_callback(pam_handle_t *pamh)
 {
-    PerlInterpreter* my_perl;
+    PerlInterpreter *my_perl;
     if (pam_get_data(pamh, MY_INTERPRETER_KEY, (void*)&my_perl) != PAM_SUCCESS)
         my_perl = NULL;
     assert(my_perl);

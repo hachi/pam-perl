@@ -34,10 +34,10 @@ PROTOTYPES: DISABLE
 
 SV*
 get_user(pam_handle, ...)
-    pam_handle_t* pam_handle
+    pam_handle_t *pam_handle
     PREINIT:
-        const char* user;
-        const char* prompt = NULL;
+        const char *user;
+        const char *prompt = NULL;
         int rv;
     CODE:
         if (items > 1)
@@ -53,8 +53,8 @@ SV*
 get_item(SV *self, item_type)
     int item_type
     PREINIT:
-        pam_handle_t* pam_handle;
-        const void* item;
+        pam_handle_t *pam_handle;
+        const void *item;
         int rv;
     INIT:
         pam_handle = xs_object_magic_get_struct_rv(aTHX_ self);
@@ -82,9 +82,9 @@ get_item(SV *self, item_type)
             case PAM_CONV :
                 rv = pam_get_item(pam_handle, item_type, &item);
                 if (rv == PAM_SUCCESS) {
-                    SV* pamc = xs_object_magic_create(aTHX_ (void*)item, gv_stashpv("PAM::Conversation", GV_ADD));
+                    SV *pamc = xs_object_magic_create(aTHX_ (void*)item, gv_stashpv("PAM::Conversation", GV_ADD));
 
-                    SV* pamh_ref = newRV_inc(SvRV(self));
+                    SV *pamh_ref = newRV_inc(SvRV(self));
                     if (hv_stores((HV*)SvRV(pamc), "handle", pamh_ref) == NULL)
                         SvREFCNT_dec(pamh_ref);
 
@@ -107,11 +107,11 @@ get_item(SV *self, item_type)
 
 void
 set_item(pam_handle, item_type, item_sv)
-    pam_handle_t* pam_handle
+    pam_handle_t *pam_handle
     int item_type
-    SV* item_sv
+    SV *item_sv
     PREINIT:
-        const void* item;
+        const void *item;
         int rv;
     CODE:
         switch (item_type)
@@ -143,10 +143,10 @@ set_item(pam_handle, item_type, item_sv)
 
 SV*
 get_data(pam_handle, name)
-    pam_handle_t* pam_handle
-    const char* name
+    pam_handle_t *pam_handle
+    const char *name
     PREINIT:
-        const void* data;
+        const void *data;
         int rv;
     CODE:
         rv = pam_get_data(pam_handle, name, &data);
@@ -159,9 +159,9 @@ get_data(pam_handle, name)
 
 void
 set_data(pam_handle, name, data_sv)
-    pam_handle_t* pam_handle
-    const char* name
-    SV* data_sv
+    pam_handle_t *pam_handle
+    const char *name
+    SV *data_sv
     PREINIT:
         const void *data;
         void *datacpy;
@@ -182,10 +182,10 @@ set_data(pam_handle, name, data_sv)
 
 void
 getenvlist(pam_handle)
-    pam_handle_t* pam_handle
+    pam_handle_t *pam_handle
     PREINIT:
-        char** env;
-        char** env_orig;
+        char **env;
+        char **env_orig;
     PPCODE:
         env = pam_getenvlist(pam_handle);
         env_orig = env;
@@ -197,10 +197,10 @@ getenvlist(pam_handle)
 
 SV*
 getenv(pam_handle, name)
-    pam_handle_t* pam_handle
-    const char* name
+    pam_handle_t *pam_handle
+    const char *name
     PREINIT:
-        const char* value;
+        const char *value;
     CODE:
         value = pam_getenv(pam_handle, name);
         RETVAL = newSVpv(value, 0);
@@ -209,9 +209,9 @@ getenv(pam_handle, name)
 
 void
 putenv(pam_handle, name_value_sv)
-    pam_handle_t* pam_handle
-    SV* name_value_sv
-    const void* name_value = NO_INIT
+    pam_handle_t *pam_handle
+    SV *name_value_sv
+    const void *name_value = NO_INIT
     int rv           = NO_INIT
     CODE:
         name_value = SvPV_nolen(name_value_sv);
@@ -219,10 +219,10 @@ putenv(pam_handle, name_value_sv)
 
 SV*
 strerror(pam_handle, errnum)
-    pam_handle_t* pam_handle
+    pam_handle_t *pam_handle
     int           errnum
     PREINIT:
-        const char* errstr;
+        const char *errstr;
     CODE:
         errstr = pam_strerror(pam_handle, errnum);
         RETVAL = newSVpv(errstr, 0);
@@ -234,11 +234,11 @@ MODULE = PAM    PACKAGE = PAM::Conversation
 int
 run(SV *self, ...)
     PREINIT:
-        struct pam_conv* pamc;
+        struct pam_conv *pamc;
         struct pam_message **msg = NULL;
         struct pam_response *resp = NULL;
         int rv, i;
-        SV** pamh_ref;
+        SV **pamh_ref;
     INIT:
         pamc = xs_object_magic_get_struct_rv(aTHX_ self);
     CODE:
@@ -247,7 +247,7 @@ run(SV *self, ...)
         items--; // self takes up one
 
         if (pamh_ref != NULL) {
-            pam_handle_t* pamh = xs_object_magic_get_struct_rv(aTHX_ *pamh_ref);
+            pam_handle_t *pamh = xs_object_magic_get_struct_rv(aTHX_ *pamh_ref);
 
             msg = malloc(sizeof(struct pam_message*) * items);
             msg[0] = malloc(sizeof(struct pam_message) * items);
@@ -296,7 +296,7 @@ run(SV *self, ...)
             // This takes me back to the other perl interpreter
             start_perl_callback(pamh);
 
-            rv = (*(pamc->conv))(items, (const struct pam_message **)msg, &resp, pamc->appdata_ptr);
+            rv = (*(pamc->conv))(items, (const struct pam_message**)msg, &resp, pamc->appdata_ptr);
 
             free(msg[0]);
 
