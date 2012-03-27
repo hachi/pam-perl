@@ -1,2 +1,7 @@
+ -- Add conversation support
+ -- Fix a lot of segfaults and memory issues
+ -- Clean up perl interpreter when pam handle is cleaned up
+ -- Add portability? Might work on OSX and Solaris now
+
 0.01
  -- Spend forever figuring how to embed perl in a plugin to something else.
