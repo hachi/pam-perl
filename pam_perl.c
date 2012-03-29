@@ -17,7 +17,7 @@ invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **
     int (*perl_invoke)(const char*, pam_handle_t*, int, int, const char**) = NULL;
     void *handle = NULL;
 
-    handle = dlopen("/lib/security/perl_helper.so", RTLD_LAZY | RTLD_GLOBAL | RTLD_NODELETE);
+    handle = dlopen(PAM_LIB_DIR "/perl_helper.so", RTLD_LAZY | RTLD_GLOBAL | RTLD_NODELETE);
     if (handle == NULL)
         return PAM_MODULE_UNKNOWN;
 
