@@ -5,6 +5,11 @@ use ExtUtils::Depends;
 name           'PAM';
 all_from       'lib/PAM.pm';
 
+requires 'ExtUtils::Constant' => 0;
+requires 'ExtUtils::Embed'    => 0;
+requires 'ExtUtils::Depends'  => 0;
+requires 'XS::Object::Magic'  => 0;
+
 my $pkg = ExtUtils::Depends->new('PAM', 'XS::Object::Magic');
 
 makemaker_args(
