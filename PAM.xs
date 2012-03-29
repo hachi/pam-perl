@@ -11,14 +11,12 @@
 
 #include <security/pam_modules.h>
 #include <security/pam_appl.h>
-#include <security/pam_ext.h>
 #include "const-c.inc"
 
 #include "xs_object_magic.h"
 
+#include "compat.h"
 #include "perl_helper.h"
-
-#define DEBUGGING
 
 static void cleanup_data(pam_handle_t*, void*, int);
 
@@ -254,22 +252,17 @@ run(SV *self, ...)
             msg = malloc(sizeof(struct pam_message*) * items);
             msg[0] = malloc(sizeof(struct pam_message) * items);
 
-        #ifdef DEBUGGING
             pam_syslog(pamh, LOG_DEBUG, "Allocated memory for %d items", items);
-        #endif
 
             for (i = 1; i < items; i++) {
                 msg[i] = msg[0] + (sizeof(struct pam_message) * i);
             }
 
-        #ifdef DEBUGGING
             pam_syslog(pamh, LOG_DEBUG, "Done doubly linking list");
-        #endif
 
             for (i = 0; i < items; i++) {
-        #ifdef DEBUGGING
                 pam_syslog(pamh, LOG_DEBUG, "Handling arg item %d", i);
-        #endif
+
                 SV *item_rv = ST(i+1);
                 if((SvTYPE(SvRV(item_rv)) != SVt_PVAV)) {
                     croak("PAM::Conversation::run arguments should be all arrayrefs with two elements, %d is not an arrayref.", i);
@@ -296,9 +289,8 @@ run(SV *self, ...)
                         croak("PAM::Conversation::run argument %d element one was pointer to NULL.", i);
                     msg[i]->msg       = SvPV_nolen(*temp);
                 }
-        #ifdef DEBUGGING
+
                 pam_syslog(pamh, LOG_DEBUG, "Message configued is code %d string %s", msg[i]->msg_style, msg[i]->msg);
-        #endif
             }
 
             // This takes me back to the other perl interpreter

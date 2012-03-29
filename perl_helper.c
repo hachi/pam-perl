@@ -3,15 +3,13 @@
 
 #include <security/pam_modules.h>
 #include <syslog.h>
-#include <security/pam_ext.h>
 
 #include <xs_object_magic.h>
 
 #include <assert.h>
 
+#include "compat.h"
 #include "perl_helper.h"
-
-#define DEBUGGING
 
 #define ORIGINAL_INTERPRETER_KEY "perl_original_interpreter"
 #define MY_INTERPRETER_KEY "perl_my_interpreter"
@@ -27,23 +25,17 @@ invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **
     int i;
     PerlInterpreter *original_interpreter, *my_perl;
 
-#ifdef DEBUGGING
     pam_syslog(pamh, LOG_DEBUG, "Starting up");
-#endif
 
     if (pam_get_data(pamh, ORIGINAL_INTERPRETER_KEY, (void*)&original_interpreter) == PAM_SUCCESS) {
-#ifdef DEBUGGING
         pam_syslog(pamh, LOG_DEBUG, "Unexpected, original interpreter is already defined");
-#endif
         return PAM_SYSTEM_ERR;
     }
 
     original_interpreter = PERL_GET_INTERP;
 
     if (pam_get_data(pamh, MY_INTERPRETER_KEY, (void*)&my_perl) != PAM_SUCCESS) {
-#ifdef DEBUGGING
         pam_syslog(pamh, LOG_DEBUG, "I don't have an interpreter allocated yet");
-#endif
         my_perl = NULL;
     }
 
@@ -51,14 +43,10 @@ invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **
         int my_argc = 3;
         char *my_argv[] = { "", "-T", "-e1", NULL }; // POSIX says it must be NULL terminated, even though we have argc
 
-#ifdef DEBUGGING
         pam_syslog(pamh, LOG_DEBUG, "Creating a new perl interpreter");
-#endif
 
         if (original_interpreter == NULL) {
-#ifdef DEBUGGING
             pam_syslog(pamh, LOG_DEBUG, "We're the first perl interpreter, initialize perl libs");
-#endif
             PERL_SYS_INIT(&my_argc, (char***)&my_argv);
         }
 
@@ -68,16 +56,12 @@ invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **
         perl_parse(my_perl, xs_init, my_argc, my_argv, (char **)NULL);
     }
     else {
-#ifdef DEBUGGING
         pam_syslog(pamh, LOG_DEBUG, "Already have a perl interpreter, change context to it");
-#endif
         PERL_SET_CONTEXT(my_perl);
     }
 
     if (argc < 1 || argv[0] == NULL) {
-#ifdef DEBUGGING
         pam_syslog(pamh, LOG_DEBUG, "We were called with no arguments, don't know what to load");
-#endif
         return PAM_MODULE_UNKNOWN;
     }
 
@@ -91,15 +75,12 @@ invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **
 
     pam_set_data(pamh, MY_INTERPRETER_KEY, my_perl, &cleanup_my_perl);
     if (original_interpreter != NULL) {
-#ifdef DEBUGGING
         pam_syslog(pamh, LOG_DEBUG, "We have an original interpreter, set up some state to store it");
-#endif
         pam_set_data(pamh, ORIGINAL_INTERPRETER_KEY, original_interpreter, NULL);
     }
 
-#ifdef DEBUGGING
     pam_syslog(pamh, LOG_DEBUG, "Get ready to invoke the module");
-#endif
+
     dSP;
     ENTER;
     SAVETMPS;
@@ -119,9 +100,7 @@ invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **
     LEAVE;
 
     if (original_interpreter != NULL) {
-#ifdef DEBUGGING
         pam_syslog(pamh, LOG_DEBUG, "Return to the original interpreter context");
-#endif
         PERL_SET_CONTEXT(original_interpreter);
         pam_set_data(pamh, ORIGINAL_INTERPRETER_KEY, NULL, NULL);
     }
@@ -138,9 +117,7 @@ invoke(const char *phase, pam_handle_t *pamh, int flags, int argc, const char **
 void
 cleanup_my_perl(pam_handle_t *pamh, void *data, int error_status)
 {
-#ifdef DEBUGGING
     pam_syslog(pamh, LOG_DEBUG, "Cleaning up perl interpreter");
-#endif
     PerlInterpreter* my_perl = (PerlInterpreter*)data;
     perl_destruct(my_perl);
     perl_free(my_perl);
