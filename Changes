@@ -1,3 +1,8 @@
+ -- Make it actually compile and work on OSX
+ -- Make constants problems show up at compile time
+ -- Turn on debugging all the time
+ -- Add dependencies
+
 0.02
  -- Add conversation support
  -- Fix a lot of segfaults and memory issues
