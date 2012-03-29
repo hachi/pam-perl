@@ -40,6 +40,9 @@ PAM_IGNORE
 PAM_ABORT
 PAM_AUTHTOK_EXPIRED
 PAM_MODULE_UNKNOWN
+) ];
+
+$EXPORT_TAGS{'return_linux'} = [ qw(
 PAM_BAD_ITEM
 PAM_CONV_AGAIN
 PAM_INCOMPLETE
@@ -71,11 +74,13 @@ PAM_ERROR_MSG
 PAM_TEXT_INFO
 ) ];
 
+# @{$EXPORT_TAGS{'item_linux'}},
 $EXPORT_TAGS{'all'} = [
     @{$EXPORT_TAGS{'return'}},
     @{$EXPORT_TAGS{'item'}},
-    @{$EXPORT_TAGS{'item_linux'}},
     @{$EXPORT_TAGS{'conv'}},
+    ($^O eq "linux" ? @{$EXPORT_TAGS{'return_linux'}} : ()),
+    ($^O eq "linux" ? @{$EXPORT_TAGS{'item_linux'}} : ()),
 ];
 
 our @EXPORT_OK = ( @{ $EXPORT_TAGS{'all'} } );
