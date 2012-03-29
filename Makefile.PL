@@ -55,7 +55,7 @@ pam-install: pam_perl.so perl_helper.so
 
 const-xs.inc const-c.inc :: pm_to_blib
 	$(PERLRUN) -MExtUtils::Constant=WriteConstants -Mblib -MPAM::Constants \
-                   -e 'WriteConstants(NAME => "PAM", NAMES => \@PAM::Constants::EXPORT_OK)'
+                   -e 'WriteConstants(NAME => "PAM", NAMES => [ map { { name => $$_, macro => 1 } } @PAM::Constants::EXPORT_OK ])'
 
 all :: pam
 
