@@ -1,5 +1,11 @@
 package PAM::Constants;
 
+=head1 NAME
+
+PAM::Constants - Module to import constants for use with PAM
+
+=cut
+
 use strict;
 use warnings;
 

@@ -1,3 +1,6 @@
+ -- dzil fixed build environment from last build, META files were out of date.
+ -- Switch to dzil
+
 0.30
  -- Make it actually compile and work on OSX
  -- Make constants problems show up at compile time
